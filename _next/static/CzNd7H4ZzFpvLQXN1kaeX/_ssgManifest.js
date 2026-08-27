@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Foutbox\u002F[rfqId]","\u002Frfqs\u002F[rfqId]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
