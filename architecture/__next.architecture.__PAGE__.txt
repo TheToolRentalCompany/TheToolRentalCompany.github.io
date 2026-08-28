@@ -1,0 +1,92 @@
+1:"$Sreact.fragment"
+2:I[22016,["/_next/static/chunks/3r4cn4cv80wz8.js","/_next/static/chunks/2_6igba8wf1-t.js"],""]
+3:I[90864,["/_next/static/chunks/3r4cn4cv80wz8.js","/_next/static/chunks/2_6igba8wf1-t.js"],"MermaidDiagram"]
+:HL["/n8n-system-diagram.png","image"]
+4:T658,sequenceDiagram
+  participant Customer
+  participant M365 as Microsoft 365
+  participant Monitor as Monitoring Service
+  participant Queue as RFQ Queue
+  participant Backend as Backend Agent Worker
+  participant Agent as Agent Runtime
+  participant Plugin as /rfq_to_quote
+  participant TRSD as TRSD MCP Server
+  participant BC as Business Central MCP Server
+  participant Employee as TTRD Employee
+
+  Customer->>M365: Send RFQ email and attachments
+  Monitor->>M365: Watch mailbox for quote requests
+  M365-->>Monitor: New RFQ email ID and mailbox metadata
+  Monitor->>Queue: Enqueue RFQ processing job
+  Queue->>Backend: Deliver email ID to agent worker
+  Backend->>Agent: Start server-side agent run
+  Agent->>Plugin: Load /rfq_to_quote workflow instructions
+  Plugin->>M365: getEmail(emailId)
+  M365-->>Plugin: Email body, metadata, attachments
+  Plugin->>Agent: Ask model to extract requirements
+  Agent-->>Plugin: Structured RFQ requirements and missing fields
+  Plugin->>TRSD: Search catalogue and serialized assets
+  TRSD-->>Plugin: Matches, availability, rates, readiness, blocked reasons
+  Plugin->>BC: Create draft or partial quote
+  BC-->>Plugin: Draft quote number and quote lines
+  Plugin->>Agent: Ask model to compose customer response
+  Agent-->>Plugin: Draft subject, body, assumptions, questions
+  Plugin->>M365: createDraftEmail(...)
+  M365-->>Plugin: Draft email ID
+  Agent-->>Backend: Return progress events and final result
+  Backend-->>M365: Store processing summary and draft reference
+  Employee->>M365: Review, edit, approve, and send draft
+  M365-->>Customer: Approved quote or clarification emaila:X
+f:X
+f:C
+0:{"buildId":"cxGeDclYpsm8TXp8jJh1q","data":[{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"page-stack","children":[["$","nav",null,{"className":"breadcrumbs","aria-label":"Breadcrumbs","children":[["$","span","Home-0",{"children":[["$","$L2",null,{"href":"/","children":"Home"}]," / "]}],["$","span","Architecture-1",{"children":["Architecture",""]}]]}],["$","header",null,{"className":"page-header","children":[["$","span",null,{"className":"eyebrow","children":"Architecture"}],["$","h1",null,{"children":"Server-side RFQ agent workflow"}],["$","p",null,{"children":"Microsoft 365 intake triggers a backend workflow. The agent, workflow/plugin, LLM calls, MCP server calls, quote creation, and draft email creation are treated as server-side responsibilities."}]]}],["$","section",null,{"className":"panel","children":[["$","h2",null,{"children":"Architecture stance"}],["$","ul",null,{"children":[["$","li",null,{"children":"Microsoft 365 is the likely intake point for RFQ emails and attachments."}],["$","li",null,{"children":"A monitoring service or event handler detects new quote requests and queues the email ID."}],["$","li",null,{"children":["The backend agent worker receives the email ID and starts the configured ",["$","code",null,{"children":"/rfq_to_quote"}]," workflow."]}],["$","li",null,{"children":"The server-side agent runtime calls the remote LLM for interpretation, drafting, and structured outputs."}],["$","li",null,{"children":"MCP servers perform system access: Microsoft 365, TRSD catalogue/asset data, Business Central, and logistics."}],["$","li",null,{"children":"Customer-facing output is created as a draft in the operational system and requires TTRD employee review before sending."}]]}]]}],["$","section",null,{"className":"panel","children":[["$","div",null,{"className":"section-title","children":[["$","h2",null,{"children":"n8n system diagram"}],["$","p",null,{"children":"Alternative orchestration view showing how a workflow automation layer could coordinate intake, model calls, tools, and review."}]]}],["$","div",null,{"className":"diagram-scroll","children":["$","img",null,{"className":"architecture-image","src":"/n8n-system-diagram.png","alt":"n8n system architecture diagram"}]}]]}],["$","section",null,{"className":"panel","children":[["$","div",null,{"className":"section-title","children":[["$","h2",null,{"children":"RFQ sequence"}],["$","p",null,{"children":"How the customer RFQ moves from Microsoft 365 intake through queueing, backend agent execution, MCP servers, and employee review."}]]}],["$","div",null,{"className":"diagram-scroll","children":["$","$L3",null,{"chart":"$4","variant":"sequenceLarge"}]}]]}],"$L5","$L6"]}],["$L7"],"$L8"]}],"isPartial":"$@9","staleTime":"$a","varyParams":null},{"rsc":"$Lb","isPartial":"$@c","staleTime":"$a","varyParams":null},{"rsc":"$Ld","isPartial":"$@e","staleTime":"$a","varyParams":"$f"},{"rsc":"$L10","isPartial":"$@11","staleTime":"$a","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@12","rootVaryParams":null,"needsRuntimeRequest":"$@13"}
+15:I[97367,["/_next/static/chunks/3r4cn4cv80wz8.js"],"OutletBoundary"]
+16:"$Sreact.suspense"
+18:I[97367,["/_next/static/chunks/3r4cn4cv80wz8.js"],"ViewportBoundary"]
+19:I[97367,["/_next/static/chunks/3r4cn4cv80wz8.js"],"MetadataBoundary"]
+1a:I[39756,["/_next/static/chunks/3r4cn4cv80wz8.js"],"default"]
+1b:I[37457,["/_next/static/chunks/3r4cn4cv80wz8.js"],"default"]
+1c:I[97092,["/_next/static/chunks/3r4cn4cv80wz8.js"],"DemoAuthGate"]
+1d:I[39685,["/_next/static/chunks/3r4cn4cv80wz8.js"],"ClearDemoState"]
+1e:I[99033,["/_next/static/chunks/3r4cn4cv80wz8.js"],"LogoutButton"]
+:HL["/_next/static/chunks/2m1yg_f9f88nf.css","style"]
+14:T494,flowchart TD
+  A["Microsoft 365 mailbox<br/>new RFQ email arrives"] --> B["Monitoring service<br/>detects quote request"]
+  B --> C["RFQ processing queue<br/>email ID and mailbox metadata"]
+  C --> D["Backend agent worker<br/>starts server job"]
+  D --> E["Agent runtime<br/>holds workflow state and audit log"]
+  E --> F["/rfq_to_quote plugin<br/>ordered workflow instructions"]
+
+  F --> G["MCP call<br/>Microsoft 365 getEmail"]
+  G --> H["Source email package<br/>body, subject, sender, attachments"]
+  H --> I["Model call<br/>understand RFQ content"]
+  I --> J["Structured JSON in agent context<br/>equipment, dates, location, missing fields"]
+
+  J --> K["MCP call<br/>TRSD searchEquipment"]
+  J --> L["MCP call<br/>TRSD getRatesAndReadiness"]
+  J --> M["MCP call<br/>Business Central createDraftQuote"]
+  J --> N["MCP call<br/>Microsoft 365 createDraftEmail"]
+
+  K --> E
+  L --> E
+  M --> E
+  N --> E
+
+  E --> O["Progress and audit stream<br/>plain-language status, compact trace, full trace on demand"]
+  O --> P["Operational review surface<br/>M365, Business Central, Teams, or demo UI"]
+  E --> Q["Final result<br/>processed RFQ, draft quote, draft customer email"]5:["$","section",null,{"className":"panel","children":[["$","div",null,{"className":"section-title","children":[["$","h2",null,{"children":"Agent, plugin, and MCP model"}],["$","p",null,{"children":"The monitoring service detects an RFQ in Microsoft 365 and queues the email ID. The agent worker then runs the plugin and uses MCP tools for system actions."}]]}],["$","div",null,{"className":"diagram-scroll","children":["$","$L3",null,{"chart":"$14"}]}]]}]
+6:["$","section",null,{"className":"panel","children":[["$","h2",null,{"children":"What the LLM should do"}],["$","table",null,{"className":"architecture-table","children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Handled by model"}],["$","th",null,{"children":"Handled by MCP/tooling"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Understand messy RFQ language, emails, PDFs, and attachment text."}],["$","td",null,{"children":"Fetch email records, attachments, customer data, catalogue records, and asset status."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Normalize customer wording into structured equipment requests."}],["$","td",null,{"children":"Return authoritative prices, availability, depot, readiness, certificate, and booking data."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Identify missing fields, ambiguity, compatibility risks, and customer questions."}],["$","td",null,{"children":"Create draft quotes, draft emails, approval records, and audit entries."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Draft customer-safe summaries and email wording for review."}],["$","td",null,{"children":"Persist final outputs in Microsoft 365, Business Central, or other operational systems."}]]}]]}]]}]]}]
+7:["$","script","script-0",{"src":"/_next/static/chunks/2_6igba8wf1-t.js","async":true}]
+8:["$","$L15",null,{"children":["$","$16",null,{"name":"Next.MetadataOutlet","children":"$@17"}]}]
+b:["$","$1","h",{"children":[null,["$","$L18",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L19",null,{"children":["$","$16",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"The Tool Rental Company (TTRD) RFQ Agent"}],["$","meta","1",{"name":"description","content":"RFQ-to-quote agent workflow"}]]}]}]}],null]}]
+d:["$","$1","c",{"children":[null,["$","$L1a",null,{"parallelRouterKey":"children","template":["$","$L1b",null,{}]}]]}]
+10:["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2m1yg_f9f88nf.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3r4cn4cv80wz8.js","async":true}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L1c",null,{"children":["$","div",null,{"className":"app-shell","children":[["$","aside",null,{"className":"sidebar","children":[["$","div",null,{"children":[["$","$L2",null,{"href":"/","className":"brand","children":[["$","span",null,{"className":"brand-mark","children":"T"}],["$","span",null,{"children":[["$","strong",null,{"children":"TTRD RFQ Agent"}],["$","small",null,{"children":"RFQ Agent"}]]}]]}],["$","nav",null,{"className":"nav","aria-label":"Primary navigation","children":[["$","$L2","/",{"href":"/","children":"Overview"}],["$","$L2","/rfqs",{"href":"/rfqs","children":"RFQs"}],["$","$L2","/trsd",{"href":"/trsd","children":"Tool List"}],["$","$L2","/outbox",{"href":"/outbox","children":"Outbox"}],["$","$L2","/architecture",{"href":"/architecture","children":"Architecture"}]]}]]}],["$","div",null,{"className":"sidebar-note","children":[["$","span",null,{"className":"status-dot"}],["$","p",null,{"children":"RFQ intake, quote preparation, and customer response workflow."}],["$","$L1d",null,{}],["$","$L1e",null,{}]]}]]}],["$","main",null,{"className":"content","children":["$","$L1a",null,{"parallelRouterKey":"children","template":["$","$L1b",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]}]}]}]]}]
+17:null
+13:true
+a:300
+a:C
+12:0
+c:"$undefined"
+e:"$undefined"
+11:"$undefined"
+9:"$undefined"
